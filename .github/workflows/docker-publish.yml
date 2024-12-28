@@ -32,14 +32,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+
   build:
 
     strategy:
       fail-fast: false
       matrix:
         platform:
-          - linux/amd64
-          - linux/arm64
+          - 'linux/amd64'
+          - 'linux/arm64'
 
     runs-on: ubuntu-latest
     permissions:
@@ -67,6 +68,7 @@ jobs:
           echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_ENV}"
 
       - name: Set up QEMU
+        if: ${{ matrix.platform != 'linux/amd64' }}
         uses: docker/setup-qemu-action@v3
         with:
           platforms: arm64
@@ -101,10 +103,10 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          #push: ${{ github.event_name != 'pull_request' }}
+          push: ${{ github.event_name != 'pull_request' }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=${{ github.event_name != 'pull_request' }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # See: https://docs.docker.com/build/ci/github-actions/cache/#github-cache
           cache-from: type=gha
