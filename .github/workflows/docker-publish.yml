@@ -104,7 +104,7 @@ jobs:
           #push: ${{ github.event_name != 'pull_request' }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           tags: ${{ steps.meta.outputs.tags }}
           # See: https://docs.docker.com/build/ci/github-actions/cache/#github-cache
           cache-from: type=gha
