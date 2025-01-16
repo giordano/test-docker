@@ -38,9 +38,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - 'linux/amd64'
-          - 'linux/arm64'
+        include:
+          - platform: 'linux/amd64'
+            os: 'ubuntu-latest'
+          - platform: 'linux/arm64'
+            os: 'ubuntu-24.04-arm'
 
     runs-on: ubuntu-latest
     permissions:
@@ -67,11 +69,11 @@ jobs:
           IMAGE_NAME=$(echo ${IMAGE_NAME} | tr A-Z a-z)
           echo "IMAGE_NAME=${IMAGE_NAME}" >> "${GITHUB_ENV}"
 
-      - name: Set up QEMU
-        if: ${{ matrix.platform != 'linux/amd64' }}
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
+      # - name: Set up QEMU
+      #   if: ${{ matrix.platform != 'linux/amd64' && matrix.platform != 'linux/arm64' }}
+      #   uses: docker/setup-qemu-action@v3
+      #   with:
+      #     platforms: arm64
 
       # Needed to make caching on GHA work: https://stackoverflow.com/a/73884678.
       # https://github.com/docker/setup-buildx-action
